@@ -1,10 +1,21 @@
 import {Router} from 'express';
+import {getMongoRepository} from 'typeorm';
+import Categorias from '../src/entity/Categorias';
+
+
+// createConnection("mongo");
+
 
 const categoryRouter = Router();
 
-categoryRouter.post('/',(req, res)=>{
+categoryRouter.post('/', async (req, res)=>{
+    // const manager = getMongoManager();
+    const categoriasRepo = getMongoRepository(Categorias,"mongo");
+    const resutl = categoriasRepo.create({name:"olá"})
+    await categoriasRepo.save(resutl);
+    const result = await categoriasRepo.find();
 
-    return res.json({message:"Cadastrado com sucesso."});
+    return res.json(result);
 })
 
 export default categoryRouter;
