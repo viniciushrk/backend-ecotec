@@ -4,7 +4,6 @@
     "synchronize": true,
     "logging": true,
     "database": "Ecotec",
-    "name":"mongo",
     "entities": [
        "./src/entity/*.ts"
     ],
