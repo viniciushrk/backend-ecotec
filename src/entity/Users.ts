@@ -1,7 +1,7 @@
 import {Entity, ObjectID, ObjectIdColumn, Column, CreateDateColumn, UpdateDateColumn} from "typeorm"; 
 
 @Entity("Users") 
-class Categoria {  
+class Users {  
 
    @ObjectIdColumn() 
    id: ObjectID; 
@@ -15,6 +15,9 @@ class Categoria {
    @Column() 
    senha: string; 
 
+   @Column() 
+   foto_user: string; 
+
    @CreateDateColumn()
    created_at: Date; 
 
@@ -22,4 +25,4 @@ class Categoria {
    update_at: Date; 
 }
 
-export default Categoria
+export default Users

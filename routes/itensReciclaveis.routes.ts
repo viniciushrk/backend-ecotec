@@ -33,9 +33,7 @@ itensReciclaveisRouter.post('/', upload.single("imagem"),async (request, respons
 itensReciclaveisRouter.get('/:path',async (request, response)=>{
     const paths = request.params;
     const filePath = path.join(__dirname,'..','uploads', paths.path)
-    const file =  await fs.readFile(filePath,'utf-8',(() => null));
     const f = fs.createReadStream(filePath)
-    console.log(file)
     f.pipe(response)
 })
 
