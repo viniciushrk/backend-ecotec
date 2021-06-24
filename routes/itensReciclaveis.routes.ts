@@ -10,6 +10,18 @@ import Anexos from 'src/entity/Anexos';
 const itensReciclaveisRouter = Router();
 const upload = multer({dest:'uploads/'});
 
+itensReciclaveisRouter.get('/', upload.single("imagem"),async (request, response)=>{
+    
+    const {nome, descricao,imagem} = request.body;
+    const ItensReciclaveisRepo = getMongoRepository(ItensReciclaveis);
+    const itensRepo = getMongoRepository(Anexos);
+
+    const itens  = itensRepo.find();
+  
+    return response.json(itens);
+})
+
+
 
 
 itensReciclaveisRouter.post('/', upload.single("imagem"),async (request, response)=>{

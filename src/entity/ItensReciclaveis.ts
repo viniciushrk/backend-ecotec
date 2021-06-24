@@ -1,4 +1,5 @@
-import {Entity, ObjectID, ObjectIdColumn, Column, CreateDateColumn, UpdateDateColumn} from "typeorm"; 
+import {Entity, ObjectID, ObjectIdColumn, Column, CreateDateColumn, UpdateDateColumn,JoinColumn, OneToOne} from "typeorm"; 
+import Anexos from "./Anexos";
 
 @Entity("ItensReciclaveis") 
 class ItensReciclaveis {  
@@ -17,6 +18,10 @@ class ItensReciclaveis {
 
    @Column()
    imagem: string;
+
+   // @OneToOne(() => Anexos, anexo => anexo.id)
+   // @JoinColumn()
+   // Image: Anexos;
 
    @CreateDateColumn()
    created_at: Date; 

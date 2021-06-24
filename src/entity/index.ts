@@ -1,3 +1,5 @@
 import { createConnection, Connection } from 'typeorm';
 
-createConnection();
+(async () =>{
+    await createConnection();
+})()
