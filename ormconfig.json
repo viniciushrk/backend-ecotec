@@ -11,5 +11,9 @@
         "entitiesDir":"./src/entity"
     },
     "useUnifiedTopology":true,
-    "useNewUrlParser": true
+    "useNewUrlParser": true,
+    "writeConcern": {
+        "j": true,
+        "w":null
+    }
  }

@@ -22,7 +22,7 @@ categoryRouter.post('/', async (req, res)=>{
     const categoriaCreate = categoriasRepo.create(categoria)
     await categoriasRepo.save(categoriaCreate);
 
-    return res.json({categoria, message:"Criado com sucesso."});
+    return res.status(202).json({message:"Criado com sucesso."});
 });
 
 categoryRouter.put('/update', async (req, res)=>{

@@ -6,22 +6,27 @@ import fs from 'fs';
 import * as path from 'path';
 import Anexos from 'src/entity/Anexos';
 
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'uploads/')
+    },
+    filename: function (req, file, cb) {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+      cb(null, file.fieldname + '-' + uniqueSuffix )
+      cb(null, `${file.fieldname}-${uniqueSuffix}${path.extname(file.originalname)}`)
+    }
+  })
 
 const itensReciclaveisRouter = Router();
-const upload = multer({dest:'uploads/'});
+// const upload = multer({dest:'uploads/'});
+const upload = multer({storage});
 
-itensReciclaveisRouter.get('/', upload.single("imagem"),async (request, response)=>{
-    
-    const {nome, descricao,imagem} = request.body;
-    const ItensReciclaveisRepo = getMongoRepository(ItensReciclaveis);
-    const itensRepo = getMongoRepository(Anexos);
-
-    const itens  = itensRepo.find();
+itensReciclaveisRouter.get('/',async (request, response)=>{
+    const itensRepo = getMongoRepository(ItensReciclaveis);
+    const itens  = await itensRepo.find();
   
     return response.json(itens);
 })
-
-
 
 
 itensReciclaveisRouter.post('/', upload.single("imagem"),async (request, response)=>{
@@ -29,12 +34,18 @@ itensReciclaveisRouter.post('/', upload.single("imagem"),async (request, respons
     const {nome, descricao,imagem} = request.body;
     const ItensReciclaveisRepo = getMongoRepository(ItensReciclaveis);
     const AnexoRepo = getMongoRepository(Anexos);
+    const arquivo = request.file;
 
-    const anexoCreate = AnexoRepo.create({tipo:"profile",caminho:request.file.filename})
+    
+    if(arquivo == undefined){
+        return response.status(400).json({message: "Arquivo não encontrado, informe a imagem do item."})
+    }
+    const caminho = `${arquivo.filename}${path.extname(arquivo.originalname)}`
+    const anexoCreate = AnexoRepo.create({tipo:"profile",caminho:caminho})
     await AnexoRepo.save(anexoCreate);
 
     const ItensReciclaveisCreate = ItensReciclaveisRepo.create(
-        {nome: nome,descricao:descricao,itens:["2 copos","3 garrafas pets"],imagem:anexoCreate.id.toString()}
+        {nome: nome,descricao:descricao,itens:["2 copos","3 garrafas pets"],imagem:anexoCreate.caminho.toString()}
     );
 
     await  ItensReciclaveisRepo.save(ItensReciclaveisCreate);
@@ -42,7 +53,7 @@ itensReciclaveisRouter.post('/', upload.single("imagem"),async (request, respons
     return response.json({message:"Cadastrado",ItensReciclaveisCreate});
 })
 
-itensReciclaveisRouter.get('/:path',async (request, response)=>{
+itensReciclaveisRouter.patch('/:path', async (request, response)=>{
     const paths = request.params;
     const filePath = path.join(__dirname,'..','uploads', paths.path)
     const f = fs.createReadStream(filePath)
