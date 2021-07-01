@@ -5,32 +5,69 @@ import multer from "multer";
 import fs from 'fs';
 import * as path from 'path';
 import Anexos from 'src/entity/Anexos';
-import { hashSync, compareSync } from 'bcryptjs';
+import { hashSync, compareSync,compare } from 'bcryptjs';
 import Users from 'src/entity/Users';
 
-const usersRouter = Router();
+import { sign } from 'jsonwebtoken';
+import authConfig from '../config/auth';
+
+const authenticateRouter = Router();
 
 
-usersRouter.post('/', async (request, response)=>{
+// usersRouter.post('/', async (request, response)=>{
+    
+//     const { nome, email, senha} = request.body;
+
+//     if(nome === undefined && senha === undefined && email === undefined){
+//         return response.status(402).json({message: "Insira todos os dados necessários."});
+//     }
+
+//     const UsersRepo = getMongoRepository(Users);
+    
+//     const passwordHashed = hashSync(senha,8)
+
+//     const userCreate = UsersRepo.create({nome: nome, email: email,senha: passwordHashed});
+
+//     await UsersRepo.save(userCreate);
+
+//     return response.json({message: "Usuário criado com sucesso."});
+// });
+
+authenticateRouter.post('/', async (request, response)=>{
     
     const { nome, email, senha} = request.body;
+    const UsersRepo = getMongoRepository(Users);
 
-    if(nome === undefined && senha === undefined && email === undefined){
-        return response.status(402).json({message: "Insira todos os dados necessários."});
+    const user = await UsersRepo.findOne({where:{email: email}})
+   
+    if(user == undefined){
+        return response.status(402).json({message: "Usuário não encontrado."});
     }
 
-    const UsersRepo = getMongoRepository(Users);
-    
-    const passwordHashed = hashSync(senha,8)
+    const passwordMatched = await compare(
+            senha,
+            user.senha,
+        );
 
-    const userCreate = UsersRepo.create({nome: nome, email: email,senha: passwordHashed});
+    if(!passwordMatched) {
+        return response.status(402).json({message: "Usuário não encontrado."});
+    }
 
-    await UsersRepo.save(userCreate);
+    const { secret, expiresIn } = authConfig.jwt;
 
-    return response.json({message: "Usuário criado com sucesso."});
+        // lshflshfksksjfhksdhfskjhlskjfhslakjh
+    const token = sign({}, secret, {
+        subject: user?.id.toString(),
+        expiresIn,
+    });
+
+
+    return response.json([user,token]);
 });
 
 
 
 
-export default usersRouter;
+
+
+export default authenticateRouter;

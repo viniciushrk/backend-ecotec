@@ -1,4 +1,5 @@
 import {Router} from 'express';
+import authenticateRouter from './authenticate.routes';
 import categoryRouter from './categoryRouter.routes';
 import itensReciclaveis from './itensReciclaveis.routes';
 import usersRouter from './usersRouter.routes';
@@ -13,6 +14,7 @@ routes.get('/', (req,res)=>{
 routes.use('/categorias', categoryRouter)
 routes.use('/itensReciclaveis', itensReciclaveis)
 routes.use('/user', usersRouter)
+routes.use('/login', authenticateRouter)
 
 
 

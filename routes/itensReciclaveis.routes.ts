@@ -31,7 +31,7 @@ itensReciclaveisRouter.get('/',async (request, response)=>{
 
 itensReciclaveisRouter.post('/', upload.single("imagem"),async (request, response)=>{
     
-    const {nome, descricao,imagem} = request.body;
+    const {nome, descricao,imagem, itens} = request.body;
     const ItensReciclaveisRepo = getMongoRepository(ItensReciclaveis);
     const AnexoRepo = getMongoRepository(Anexos);
     const arquivo = request.file;
@@ -40,12 +40,13 @@ itensReciclaveisRouter.post('/', upload.single("imagem"),async (request, respons
     if(arquivo == undefined){
         return response.status(400).json({message: "Arquivo não encontrado, informe a imagem do item."})
     }
+    
     const caminho = `${arquivo.filename}${path.extname(arquivo.originalname)}`
     const anexoCreate = AnexoRepo.create({tipo:"profile",caminho:caminho})
     await AnexoRepo.save(anexoCreate);
 
     const ItensReciclaveisCreate = ItensReciclaveisRepo.create(
-        {nome: nome,descricao:descricao,itens:["2 copos","3 garrafas pets"],imagem:anexoCreate.caminho.toString()}
+        {nome: nome,descricao:descricao,itens:itens,imagem:anexoCreate.caminho.toString()}
     );
 
     await  ItensReciclaveisRepo.save(ItensReciclaveisCreate);
