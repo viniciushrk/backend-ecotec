@@ -1,5 +1,4 @@
 import {Entity, ObjectID, ObjectIdColumn, Column, CreateDateColumn, UpdateDateColumn,JoinColumn, OneToOne} from "typeorm"; 
-import Anexos from "./Anexos";
 
 @Entity("ItensReciclaveis") 
 class ItensReciclaveis {  
@@ -18,6 +17,15 @@ class ItensReciclaveis {
 
    @Column()
    imagem: string;
+   
+   @Column()
+   user_id: ObjectID;
+   
+   @Column()
+   categoria_id: ObjectID;
+
+   @Column()
+   preco: number;
 
    // @OneToOne(() => Anexos, anexo => anexo.id)
    // @JoinColumn()

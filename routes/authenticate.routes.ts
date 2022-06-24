@@ -1,11 +1,6 @@
-import {Router} from 'express';
+import {Router, Request, Response} from 'express';
 import {getMongoRepository} from 'typeorm';
-import ItensReciclaveis from '../src/entity/ItensReciclaveis';
-import multer from "multer";
-import fs from 'fs';
-import * as path from 'path';
-import Anexos from 'src/entity/Anexos';
-import { hashSync, compareSync,compare } from 'bcryptjs';
+import { compare } from 'bcryptjs';
 import Users from 'src/entity/Users';
 
 import { sign } from 'jsonwebtoken';
@@ -13,32 +8,19 @@ import authConfig from '../config/auth';
 
 const authenticateRouter = Router();
 
-
-// usersRouter.post('/', async (request, response)=>{
+authenticateRouter.post('/', async (request: Request, response: Response)=>{
     
-//     const { nome, email, senha} = request.body;
-
-//     if(nome === undefined && senha === undefined && email === undefined){
-//         return response.status(402).json({message: "Insira todos os dados necessários."});
-//     }
-
-//     const UsersRepo = getMongoRepository(Users);
+    const { email, senha} = request.body;
     
-//     const passwordHashed = hashSync(senha,8)
+    if (!email || !senha) {
+        return response.status(400).json({message: "Informe o email e a senha."});	
+    }
 
-//     const userCreate = UsersRepo.create({nome: nome, email: email,senha: passwordHashed});
-
-//     await UsersRepo.save(userCreate);
-
-//     return response.json({message: "Usuário criado com sucesso."});
-// });
-
-authenticateRouter.post('/', async (request, response)=>{
-    
-    const { nome, email, senha} = request.body;
     const UsersRepo = getMongoRepository(Users);
 
-    const user = await UsersRepo.findOne({where:{email: email}})
+    const user = await UsersRepo.findOne({
+        where:{email: email}
+    })
    
     if(user == undefined){
         return response.status(402).json({message: "Usuário não encontrado."});
@@ -55,19 +37,22 @@ authenticateRouter.post('/', async (request, response)=>{
 
     const { secret, expiresIn } = authConfig.jwt;
 
-        // lshflshfksksjfhksdhfskjhlskjfhslakjh
+    // lshflshfksksjfhksdhfskjhlskjfhslakjh
     const token = sign({}, secret, {
         subject: user?.id.toString(),
         expiresIn,
     });
 
+    const result = {
+        user: {
+            id: user.id,
+            nome: user.nome,
+            email: user.email,
+        },
+        token: token
+    };
 
-    return response.json([user,token]);
+    return response.json(result);
 });
-
-
-
-
-
 
 export default authenticateRouter;

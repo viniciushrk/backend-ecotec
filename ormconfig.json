@@ -1,6 +1,7 @@
 {
     "type": "mongodb",
-    "url":"mongodb+srv://vinicius:vinicius@cluster0.sjojo.mongodb.net/Ecotec?retryWrites=true&w=majority",
+    "url":"mongodb+srv://vinicius:vinicius@cluster0.sjojo.mongodb.net/Ecotec?retryWrites=true",
+    
     "synchronize": true,
     "logging": true,
     "database": "Ecotec",

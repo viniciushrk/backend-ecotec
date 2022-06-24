@@ -18,6 +18,9 @@ class Users {
    @Column() 
    foto_user: string; 
 
+   @Column()
+   telefone: string;
+
    @CreateDateColumn()
    created_at: Date; 
 

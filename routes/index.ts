@@ -7,8 +7,8 @@ import usersRouter from './usersRouter.routes';
 
 const routes = Router();
 
-routes.get('/', (req,res)=>{
-    return res.send('Tá funfando');
+routes.get('/', (req: Request,res: Response) => {
+    return res.json({message:'Tá funfando'});
 })
 
 routes.use('/categorias', categoryRouter)

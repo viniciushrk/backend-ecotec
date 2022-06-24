@@ -1,12 +1,14 @@
-import {Router} from 'express';
+import {Router, Request, Response} from 'express';
 import {getMongoRepository,createConnection} from 'typeorm';
 import Categorias from '../src/entity/Categorias';
+import ensureAuthenticated from '../middleware/ensureAuthenticated';
 
 const categoryRouter = Router();
 
-categoryRouter.get('/', async (request, response)=>{
-    const categoriasRepo = getMongoRepository(Categorias);
+categoryRouter.use(ensureAuthenticated);
 
+categoryRouter.get('/', async (request: Request, response: Response)=>{
+    const categoriasRepo = getMongoRepository(Categorias);
     const categorias = await categoriasRepo.find();
     return response.json(categorias);
 })
@@ -15,7 +17,7 @@ interface ICategoria{
     name:string
 }
 
-categoryRouter.post('/', async (req, res)=>{
+categoryRouter.post('/', async (req: Request, res: Response)=>{
     const categoria:ICategoria = req.body;
     const categoriasRepo = getMongoRepository(Categorias);
 
@@ -25,7 +27,7 @@ categoryRouter.post('/', async (req, res)=>{
     return res.status(202).json({message:"Criado com sucesso."});
 });
 
-categoryRouter.put('/update', async (req, res)=>{
+categoryRouter.put('/update', async (req: Request, res: Response)=>{
     const {id,nome} = req.body;
     
     const categoriasRepo = getMongoRepository(Categorias);
