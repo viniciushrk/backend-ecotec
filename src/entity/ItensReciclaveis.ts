@@ -5,7 +5,9 @@ class ItensReciclaveis {
 
    @ObjectIdColumn() 
    id: ObjectID; 
-   
+   @ObjectIdColumn()
+   public _id: ObjectID;
+
    @Column() 
    nome: string;
    
@@ -26,10 +28,13 @@ class ItensReciclaveis {
 
    @Column()
    preco: number;
-
+   
+   preco_format: string;
    // @OneToOne(() => Anexos, anexo => anexo.id)
    // @JoinColumn()
    // Image: Anexos;
+   @Column()
+   user: any;
 
    @CreateDateColumn()
    created_at: Date; 

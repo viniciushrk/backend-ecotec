@@ -5,7 +5,8 @@ class Users {
 
    @ObjectIdColumn() 
    id: ObjectID; 
-   
+   @ObjectIdColumn()
+   public _id: ObjectID;
    @Column() 
    nome: string; 
 
