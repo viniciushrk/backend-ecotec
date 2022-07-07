@@ -11,7 +11,7 @@ const authenticateRouter = Router();
 authenticateRouter.post('/', async (request: Request, response: Response) => {
 
     const { email, password } = request.body;
-
+    console.log("email:", email, "\nsenha", password);
     if (!email || !password) {
         return response.status(400).json({ message: "Informe o email e a senha." });
     }
