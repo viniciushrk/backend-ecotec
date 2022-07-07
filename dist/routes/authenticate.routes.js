@@ -25,6 +25,7 @@ authenticateRouter.post('/', async (request, response) => {
     email,
     password
   } = request.body;
+  console.log("email:", email, "\nsenha", password);
 
   if (!email || !password) {
     return response.status(400).json({
