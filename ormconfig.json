@@ -1,15 +1,14 @@
 {
     "type": "mongodb",
     "url":"mongodb+srv://vinicius:vinicius@cluster0.sjojo.mongodb.net/Ecotec?retryWrites=true",
-    
     "synchronize": true,
     "logging": true,
     "database": "Ecotec",
     "entities": [
-       "./src/entity/*.ts"
+       "./dist/entity/*.{ts,js}"
     ],
     "cli":{
-        "entitiesDir":"./src/entity"
+        "entitiesDir":"./dist/entity"
     },
     "useUnifiedTopology":true,
     "useNewUrlParser": true,

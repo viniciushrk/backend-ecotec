@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-      "target": "es5",
+      "target": "esnext",
       "module": "commonjs",
       "outDir": "./dist",
       "rootDir": "./",
@@ -8,16 +8,17 @@
       "strictPropertyInitialization": false,
       "baseUrl": "./",
       "allowJs": true,
-      "paths": {
-          "@modules/*":["modules/*"],
-          "@config/*":["config/*"],
-          "@shared/*":["shared/*"]
-      },
       "esModuleInterop": true,
       "experimentalDecorators": true,
       "emitDecoratorMetadata": true,
       "skipLibCheck": true,
       "forceConsistentCasingInFileNames": true
-    }
+    },
+    "exclude": ["node_modules"],
+    "ts-node": {
+      "compilerOptions": {
+        "module": "commonjs"
+      }
+    },
   }
   
