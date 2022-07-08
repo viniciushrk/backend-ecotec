@@ -7,6 +7,8 @@ exports.default = void 0;
 
 var _createUserServicec = _interopRequireDefault(require("../services/createUserServicec"));
 
+var _getUserServiceWithItens = _interopRequireDefault(require("../services/getUserServiceWithItens"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var _default = {
@@ -26,6 +28,14 @@ var _default = {
     return response.json({
       message: "Usuário criado com sucesso."
     });
+  },
+
+  async profile(request, response) {
+    const {
+      id
+    } = request.params;
+    const result = await _getUserServiceWithItens.default.execute(id);
+    return response.json(result);
   }
 
 };

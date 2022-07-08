@@ -7,6 +7,9 @@ const usersRouter = Router();
 usersRouter.post('/', userController.create);
 
 
+usersRouter.get('/:id', userController.profile);
+
+
 
 
 export default usersRouter;

@@ -13,5 +13,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const usersRouter = (0, _express.Router)();
 usersRouter.post('/', _userController.default.create);
+usersRouter.get('/:id', _userController.default.profile);
 var _default = usersRouter;
 exports.default = _default;

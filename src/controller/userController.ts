@@ -1,5 +1,6 @@
 import { Request, Response, request } from "express";
 import createUserService from "../services/createUserServicec";
+import getUserServiceWithItens from "../services/getUserServiceWithItens";
 
 
 export default {
@@ -9,5 +10,13 @@ export default {
         await createUserService.execute({ nome: nome, email: email, senha: senha, telefone: telefone });
 
         return response.json({ message: "Usuário criado com sucesso." });
+    },
+
+    async profile(request: Request, response: Response) {
+        const { id } = request.params;
+
+        const result = await getUserServiceWithItens.execute(id);
+
+        return response.json(result);
     }
 }
