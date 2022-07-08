@@ -86,7 +86,7 @@ itensReciclaveisRouter.patch('/:path', async (request: Request, response: Respon
 
 itensReciclaveisRouter.use(ensureAuthenticated);
 itensReciclaveisRouter.post('/', upload.single("imagem"), async (request: Request, response: Response) => {
-
+  console.log(request.body);
   const itemReciclavel: ItensReciclaveisRequest = request.body;
   const ItensReciclaveisRepo = getMongoRepository(ItensReciclaveis);
   const AnexoRepo = getMongoRepository(Anexos);
