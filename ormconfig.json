@@ -5,10 +5,10 @@
     "logging": true,
     "database": "Ecotec",
     "entities": [
-       "./src/entity/*.{ts,js}"
+       "./dist/entity/*.{ts,js}"
     ],
     "cli":{
-        "entitiesDir":"./src/entity"
+        "entitiesDir":"./dist/entity"
     },
     "useUnifiedTopology":true,
     "useNewUrlParser": true,
