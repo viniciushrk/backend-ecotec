@@ -109,8 +109,9 @@ itensReciclaveisRouter.patch('/:path', async (request, response) => {
 
   f.pipe(response);
 });
-itensReciclaveisRouter.use(_ensureAuthenticated.default);
-itensReciclaveisRouter.post('/', upload.single("imagem"), async (request, response) => {
+itensReciclaveisRouter.use(_ensureAuthenticated.default); // itensReciclaveisRouter.post('/', upload.single("imagem"), async (request: Request, response: Response) => {
+
+itensReciclaveisRouter.post('/', async (request, response) => {
   console.log(request.body);
   const itemReciclavel = request.body;
   const ItensReciclaveisRepo = (0, _typeorm.getMongoRepository)(_ItensReciclaveis.default); // const AnexoRepo = getMongoRepository(Anexos);
