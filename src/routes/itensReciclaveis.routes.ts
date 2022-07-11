@@ -68,6 +68,7 @@ function getImage(caminho: string): string | null {
     return null
   }
 }
+
 interface ItensReciclaveisRequest {
   nome: string;
   descricao: string;
@@ -86,28 +87,29 @@ itensReciclaveisRouter.patch('/:path', async (request: Request, response: Respon
 
 itensReciclaveisRouter.use(ensureAuthenticated);
 itensReciclaveisRouter.post('/', upload.single("imagem"), async (request: Request, response: Response) => {
-  console.log(request.body);
+  console.log(request.body)
   const itemReciclavel: ItensReciclaveisRequest = request.body;
   const ItensReciclaveisRepo = getMongoRepository(ItensReciclaveis);
-  const AnexoRepo = getMongoRepository(Anexos);
-  const arquivo = request.file;
+  // const AnexoRepo = getMongoRepository(Anexos);
+  // const arquivo = request.file;
   const user_id = request.user.id;
-  console.log(user_id);
-  if (arquivo == undefined) {
-    return response.status(400).json({ message: "Arquivo não encontrado, informe a imagem do item." })
-  }
 
-  const caminho = `${arquivo.filename}`
+  // if (arquivo == undefined) {
+  //   return response.status(400).json({ message: "Arquivo não encontrado, informe a imagem do item." })
+  // }
+
+  // const caminho = `${arquivo.filename}`
   // const caminho = `${arquivo.filename}${path.extname(arquivo.originalname)}`
-  const anexoCreate = AnexoRepo.create({ tipo: "profile", caminho: caminho })
-  await AnexoRepo.save(anexoCreate);
+  // const anexoCreate = AnexoRepo.create({ tipo: "profile", caminho: caminho })
+  // await AnexoRepo.save(anexoCreate);
 
+  // imagem: anexoCreate.caminho.toString(),
   const ItensReciclaveisCreate = ItensReciclaveisRepo.create(
     {
       nome: itemReciclavel.nome,
       descricao: itemReciclavel.descricao,
       itens: JSON.parse(itemReciclavel.itens),
-      imagem: anexoCreate.caminho.toString(),
+      imagem: '',
       user_id: user_id,
       categoria_id: itemReciclavel.categoria_id,
       preco: parseFloat(itemReciclavel.preco.toString())

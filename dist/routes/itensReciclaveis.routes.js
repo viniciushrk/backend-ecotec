@@ -19,8 +19,6 @@ var _fs = _interopRequireDefault(require("fs"));
 
 var path = _interopRequireWildcard(require("path"));
 
-var _Anexos = _interopRequireDefault(require("../entity/Anexos"));
-
 var _ensureAuthenticated = _interopRequireDefault(require("../middleware/ensureAuthenticated"));
 
 var _Users = _interopRequireDefault(require("../entity/Users"));
@@ -113,31 +111,25 @@ itensReciclaveisRouter.patch('/:path', async (request, response) => {
 });
 itensReciclaveisRouter.use(_ensureAuthenticated.default);
 itensReciclaveisRouter.post('/', upload.single("imagem"), async (request, response) => {
+  console.log(request.body);
   const itemReciclavel = request.body;
-  const ItensReciclaveisRepo = (0, _typeorm.getMongoRepository)(_ItensReciclaveis.default);
-  const AnexoRepo = (0, _typeorm.getMongoRepository)(_Anexos.default);
-  const arquivo = request.file;
-  const user_id = request.user.id;
-  console.log(user_id);
+  const ItensReciclaveisRepo = (0, _typeorm.getMongoRepository)(_ItensReciclaveis.default); // const AnexoRepo = getMongoRepository(Anexos);
+  // const arquivo = request.file;
 
-  if (arquivo == undefined) {
-    return response.status(400).json({
-      message: "Arquivo não encontrado, informe a imagem do item."
-    });
-  }
+  const user_id = request.user.id; // if (arquivo == undefined) {
+  //   return response.status(400).json({ message: "Arquivo não encontrado, informe a imagem do item." })
+  // }
+  // const caminho = `${arquivo.filename}`
+  // const caminho = `${arquivo.filename}${path.extname(arquivo.originalname)}`
+  // const anexoCreate = AnexoRepo.create({ tipo: "profile", caminho: caminho })
+  // await AnexoRepo.save(anexoCreate);
+  // imagem: anexoCreate.caminho.toString(),
 
-  const caminho = `${arquivo.filename}`; // const caminho = `${arquivo.filename}${path.extname(arquivo.originalname)}`
-
-  const anexoCreate = AnexoRepo.create({
-    tipo: "profile",
-    caminho: caminho
-  });
-  await AnexoRepo.save(anexoCreate);
   const ItensReciclaveisCreate = ItensReciclaveisRepo.create({
     nome: itemReciclavel.nome,
     descricao: itemReciclavel.descricao,
     itens: JSON.parse(itemReciclavel.itens),
-    imagem: anexoCreate.caminho.toString(),
+    imagem: '',
     user_id: user_id,
     categoria_id: itemReciclavel.categoria_id,
     preco: parseFloat(itemReciclavel.preco.toString())
