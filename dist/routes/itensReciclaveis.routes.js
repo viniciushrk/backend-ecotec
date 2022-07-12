@@ -129,7 +129,7 @@ itensReciclaveisRouter.post('/', async (request, response) => {
   const ItensReciclaveisCreate = ItensReciclaveisRepo.create({
     nome: itemReciclavel.nome,
     descricao: itemReciclavel.descricao,
-    itens: JSON.parse(itemReciclavel.itens),
+    itens: itemReciclavel.itens,
     imagem: '',
     user_id: user_id,
     categoria_id: itemReciclavel.categoria_id,
