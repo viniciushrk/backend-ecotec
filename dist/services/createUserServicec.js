@@ -19,7 +19,9 @@ class createUserService {
       nome,
       email,
       senha,
-      telefone
+      telefone,
+      longitude,
+      latitude
     } = user;
 
     if (nome === undefined && senha === undefined && email === undefined && telefone === undefined) {
@@ -34,7 +36,9 @@ class createUserService {
       nome: nome,
       email: email,
       telefone: telefone,
-      senha: passwordHashed
+      senha: passwordHashed,
+      latitude: latitude,
+      longitude: longitude
     });
     await UsersRepo.save(userCreate);
     return true;

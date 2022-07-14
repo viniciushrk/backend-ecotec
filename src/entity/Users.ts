@@ -22,6 +22,12 @@ class Users {
    @Column()
    telefone: string;
 
+   @Column()
+   latitude: number;
+
+   @Column()
+   longitude: number;
+
    @CreateDateColumn()
    created_at: Date;
 

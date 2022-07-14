@@ -32,6 +32,7 @@ const upload = (0, _multer.default)({
   storage
 });
 usersRouter.post('/', _userController.default.create);
+usersRouter.get('/', _userController.default.helpPeoples);
 usersRouter.get('/:id', _userController.default.profile);
 usersRouter.post('/:id', upload.single("imagem"), _userController.default.picture_profile);
 var _default = usersRouter;

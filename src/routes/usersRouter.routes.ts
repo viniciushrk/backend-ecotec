@@ -18,6 +18,7 @@ const upload = multer({ storage });
 
 usersRouter.post('/', userController.create);
 
+usersRouter.get('/', userController.helpPeoples);
 
 usersRouter.get('/:id', userController.profile);
 
