@@ -1,5 +1,5 @@
-import Anexos from "src/entity/Anexos";
-import Users from "src/entity/Users";
+import Anexos from "../entity/Anexos";
+import Users from "../entity/Users";
 import { Request, Response, request } from "express";
 import { getMongoRepository } from "typeorm";
 import createUserService from "../services/createUserServicec";

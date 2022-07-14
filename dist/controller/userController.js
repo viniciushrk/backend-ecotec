@@ -5,9 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _Anexos = _interopRequireDefault(require("src/entity/Anexos"));
+var _Anexos = _interopRequireDefault(require("../entity/Anexos"));
 
-var _Users = _interopRequireDefault(require("src/entity/Users"));
+var _Users = _interopRequireDefault(require("../entity/Users"));
 
 var _typeorm = require("typeorm");
 
