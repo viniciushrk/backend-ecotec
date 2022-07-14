@@ -50,7 +50,9 @@ itensReciclaveisRouter.get('/:id', async (request: Request, response: Response) 
   const item = await itensRepo.findOne({ _id: new ObjectID(params.id) });
 
   if (item != undefined) {
-    item.preco_format = item.preco.toLocaleString('pt-BR', formatmoney);
+    if (item.preco != null){
+      item.preco_format = item.preco.toLocaleString('pt-BR', formatmoney);
+    }
     item.user = await UserRepo.findOne({ _id: new ObjectID(item.user_id) });
     item.imagem = `data:image/png;base64, ${getImage(item.imagem)}`;
   }
@@ -78,49 +80,75 @@ interface ItensReciclaveisRequest {
 }
 
 itensReciclaveisRouter.patch('/:path', async (request: Request, response: Response) => {
-  const paths = request.params;
-  const filePath = path.join(__dirname, '..', '..', 'uploads', paths.path)
-  console.log(__dirname);
-  const f = fs.createReadStream(filePath, { encoding: 'base64' })
-  f.pipe(response)
+  try {
+    const paths = request.params;
+    const filePath = path.join(__dirname, '..', '..', 'uploads', paths.path)
+    console.log(__dirname);
+    const f = fs.readFileSync(filePath, { encoding: 'base64' })
+    return response.status(200).json({ imagem: `data:image/png;base64, ${f}` })
+  } catch (e) {
+    return response.status(500).json({ mensage: `Error internal ${e}` })
+  }
 })
 
 itensReciclaveisRouter.use(ensureAuthenticated);
-// itensReciclaveisRouter.post('/', upload.single("imagem"), async (request: Request, response: Response) => {
-itensReciclaveisRouter.post('/', async (request: Request, response: Response) => {
-  console.log(request.body)
-  const itemReciclavel: ItensReciclaveisRequest = request.body;
+
+itensReciclaveisRouter.post('/:id', upload.single("imagem"), async (request: Request, response: Response) => {
   const ItensReciclaveisRepo = getMongoRepository(ItensReciclaveis);
-  // const AnexoRepo = getMongoRepository(Anexos);
-  // const arquivo = request.file;
-  const user_id = request.user.id;
+  const AnexoRepo = getMongoRepository(Anexos);
+  const arquivo = request.file;
 
-  // if (arquivo == undefined) {
-  //   return response.status(400).json({ message: "Arquivo não encontrado, informe a imagem do item." })
-  // }
+  if (arquivo == undefined) {
+    return response.status(400).json({ message: "Arquivo não encontrado, informe a imagem do item." })
+  }
 
-  // const caminho = `${arquivo.filename}`
-  // const caminho = `${arquivo.filename}${path.extname(arquivo.originalname)}`
-  // const anexoCreate = AnexoRepo.create({ tipo: "profile", caminho: caminho })
-  // await AnexoRepo.save(anexoCreate);
+  const caminho = `${arquivo.filename}`
+  const anexoCreate = AnexoRepo.create({ tipo: "itens", caminho: caminho })
+  await AnexoRepo.save(anexoCreate);
 
-  // imagem: anexoCreate.caminho.toString(),
-  const ItensReciclaveisCreate = ItensReciclaveisRepo.create(
-    {
-      nome: itemReciclavel.nome,
-      descricao: itemReciclavel.descricao,
-      itens: itemReciclavel.itens,
-      imagem: '',
-      user_id: user_id,
-      categoria_id: itemReciclavel.categoria_id,
-      preco: parseFloat(itemReciclavel.preco.toString())
-    }
-  );
+  const id = request.params.id;
 
-  await ItensReciclaveisRepo.save(ItensReciclaveisCreate);
+  await ItensReciclaveisRepo.update(id, { imagem: anexoCreate.caminho.toString() })
+  return response.status(201).json({ message: "Imagem cadastrada" })
+});
 
-  return response.json({ message: "Cadastrado", ItensReciclaveisCreate });
-})
+itensReciclaveisRouter.post('/', async (request: Request, response: Response) => {
+  try {
+    const itemReciclavel: ItensReciclaveisRequest = request.body;
+    const ItensReciclaveisRepo = getMongoRepository(ItensReciclaveis);
+
+    const user_id = request.user.id;
+
+    const ItensReciclaveisCreate = ItensReciclaveisRepo.create(
+      {
+        nome: itemReciclavel.nome,
+        descricao: itemReciclavel.descricao,
+        itens: itemReciclavel.itens,
+        imagem: '',
+        user_id: user_id,
+        categoria_id: itemReciclavel.categoria_id,
+        preco: itemReciclavel.preco
+      }
+    );
+
+    await ItensReciclaveisRepo.save(ItensReciclaveisCreate);
+
+    return response.json({ message: "Cadastrado", ItensReciclaveisCreate });
+  } catch (e) {
+    return response.status(500).json(e);
+  }
+});
+
+
+itensReciclaveisRouter.delete('/:id', async (request: Request, response: Response) => {
+  const { id } = request.params;
+
+  const ItensReciclaveisRepo = getMongoRepository(ItensReciclaveis);
+
+  await ItensReciclaveisRepo.delete(id);
+
+  return response.json({ message: "Deletado com ssucesso" });
+});
 
 
 

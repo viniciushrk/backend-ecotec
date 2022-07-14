@@ -57,6 +57,11 @@ class getUserServiceWithItens {
       user: user,
       itens: itens
     };
+
+    if (user?.foto_user != null) {
+      user.foto_user = `data:image/png;base64, ${getImage(user?.foto_user)}`;
+    }
+
     itens.map(x => {
       x.preco_format = x.preco.toLocaleString('pt-BR', formatmoney);
       x.imagem = `data:image/png;base64, ${getImage(x.imagem)}`;

@@ -19,6 +19,8 @@ var _fs = _interopRequireDefault(require("fs"));
 
 var path = _interopRequireWildcard(require("path"));
 
+var _Anexos = _interopRequireDefault(require("../entity/Anexos"));
+
 var _ensureAuthenticated = _interopRequireDefault(require("../middleware/ensureAuthenticated"));
 
 var _Users = _interopRequireDefault(require("../entity/Users"));
@@ -73,7 +75,10 @@ itensReciclaveisRouter.get('/:id', async (request, response) => {
   });
 
   if (item != undefined) {
-    item.preco_format = item.preco.toLocaleString('pt-BR', formatmoney);
+    if (item.preco != null) {
+      item.preco_format = item.preco.toLocaleString('pt-BR', formatmoney);
+    }
+
     item.user = await UserRepo.findOne({
       _id: new _mongodb.ObjectID(item.user_id)
     });
@@ -99,46 +104,81 @@ function getImage(caminho) {
 }
 
 itensReciclaveisRouter.patch('/:path', async (request, response) => {
-  const paths = request.params;
-  const filePath = path.join(__dirname, '..', '..', 'uploads', paths.path);
-  console.log(__dirname);
+  try {
+    const paths = request.params;
+    const filePath = path.join(__dirname, '..', '..', 'uploads', paths.path);
+    console.log(__dirname);
 
-  const f = _fs.default.createReadStream(filePath, {
-    encoding: 'base64'
-  });
+    const f = _fs.default.readFileSync(filePath, {
+      encoding: 'base64'
+    });
 
-  f.pipe(response);
+    return response.status(200).json({
+      imagem: `data:image/png;base64, ${f}`
+    });
+  } catch (e) {
+    return response.status(500).json({
+      mensage: `Error internal ${e}`
+    });
+  }
 });
-itensReciclaveisRouter.use(_ensureAuthenticated.default); // itensReciclaveisRouter.post('/', upload.single("imagem"), async (request: Request, response: Response) => {
+itensReciclaveisRouter.use(_ensureAuthenticated.default);
+itensReciclaveisRouter.post('/:id', upload.single("imagem"), async (request, response) => {
+  const ItensReciclaveisRepo = (0, _typeorm.getMongoRepository)(_ItensReciclaveis.default);
+  const AnexoRepo = (0, _typeorm.getMongoRepository)(_Anexos.default);
+  const arquivo = request.file;
 
-itensReciclaveisRouter.post('/', async (request, response) => {
-  console.log(request.body);
-  const itemReciclavel = request.body;
-  const ItensReciclaveisRepo = (0, _typeorm.getMongoRepository)(_ItensReciclaveis.default); // const AnexoRepo = getMongoRepository(Anexos);
-  // const arquivo = request.file;
+  if (arquivo == undefined) {
+    return response.status(400).json({
+      message: "Arquivo não encontrado, informe a imagem do item."
+    });
+  }
 
-  const user_id = request.user.id; // if (arquivo == undefined) {
-  //   return response.status(400).json({ message: "Arquivo não encontrado, informe a imagem do item." })
-  // }
-  // const caminho = `${arquivo.filename}`
-  // const caminho = `${arquivo.filename}${path.extname(arquivo.originalname)}`
-  // const anexoCreate = AnexoRepo.create({ tipo: "profile", caminho: caminho })
-  // await AnexoRepo.save(anexoCreate);
-  // imagem: anexoCreate.caminho.toString(),
-
-  const ItensReciclaveisCreate = ItensReciclaveisRepo.create({
-    nome: itemReciclavel.nome,
-    descricao: itemReciclavel.descricao,
-    itens: itemReciclavel.itens,
-    imagem: '',
-    user_id: user_id,
-    categoria_id: itemReciclavel.categoria_id,
-    preco: parseFloat(itemReciclavel.preco.toString())
+  const caminho = `${arquivo.filename}`;
+  const anexoCreate = AnexoRepo.create({
+    tipo: "itens",
+    caminho: caminho
   });
-  await ItensReciclaveisRepo.save(ItensReciclaveisCreate);
+  await AnexoRepo.save(anexoCreate);
+  const id = request.params.id;
+  await ItensReciclaveisRepo.update(id, {
+    imagem: anexoCreate.caminho.toString()
+  });
+  return response.status(201).json({
+    message: "Imagem cadastrada"
+  });
+});
+itensReciclaveisRouter.post('/', async (request, response) => {
+  try {
+    const itemReciclavel = request.body;
+    const ItensReciclaveisRepo = (0, _typeorm.getMongoRepository)(_ItensReciclaveis.default);
+    const user_id = request.user.id;
+    const ItensReciclaveisCreate = ItensReciclaveisRepo.create({
+      nome: itemReciclavel.nome,
+      descricao: itemReciclavel.descricao,
+      itens: itemReciclavel.itens,
+      imagem: '',
+      user_id: user_id,
+      categoria_id: itemReciclavel.categoria_id,
+      preco: itemReciclavel.preco
+    });
+    await ItensReciclaveisRepo.save(ItensReciclaveisCreate);
+    return response.json({
+      message: "Cadastrado",
+      ItensReciclaveisCreate
+    });
+  } catch (e) {
+    return response.status(500).json(e);
+  }
+});
+itensReciclaveisRouter.delete('/:id', async (request, response) => {
+  const {
+    id
+  } = request.params;
+  const ItensReciclaveisRepo = (0, _typeorm.getMongoRepository)(_ItensReciclaveis.default);
+  await ItensReciclaveisRepo.delete(id);
   return response.json({
-    message: "Cadastrado",
-    ItensReciclaveisCreate
+    message: "Deletado com ssucesso"
   });
 });
 var _default = itensReciclaveisRouter;
