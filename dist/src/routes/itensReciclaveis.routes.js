@@ -70,7 +70,6 @@ itensReciclaveisRouter.get('/:id', async (request, response) => {
     if (item != undefined) {
         item.preco_format = item.preco.toLocaleString('pt-BR', formatmoney);
         item.user = await UserRepo.findOne({ _id: new mongodb_1.ObjectID(item.user_id) });
-        item.imagem = `data:image/png;base64, ${getImage(item.imagem)}`;
     }
     return response.json(item);
 });

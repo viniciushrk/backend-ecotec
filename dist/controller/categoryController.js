@@ -22,9 +22,6 @@ var _default = {
     try {
       const categoriasRepo = (0, _typeorm.getMongoRepository)(_Categorias.default);
       const categorias = await categoriasRepo.find();
-      categorias.map(x => {
-        x.imagem = `data:image/png;base64, ${(0, _getImage.default)(x.imagem)}`;
-      });
       return response.json(categorias);
     } catch (e) {
       throw new _AppError.default("Error internal");
@@ -44,7 +41,7 @@ var _default = {
       }
 
       const caminho = `${arquivo.filename}${_path.default.extname(arquivo.originalname)}`;
-      categoria.imagem = caminho;
+      categoria.imagem = (0, _getImage.default)(caminho);
       const categoriaCreate = categoriasRepo.create(categoria);
       await categoriasRepo.save(categoriaCreate);
       return response.status(201).json({

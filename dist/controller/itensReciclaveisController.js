@@ -46,7 +46,6 @@ var _default = {
     });
     itens.map(x => {
       x.preco_format = x.preco.toLocaleString('pt-BR', formatmoney);
-      x.imagem = `data:image/png;base64, ${(0, _getImage.default)(x.imagem)}`;
     });
     return response.json(itens);
   },
@@ -65,7 +64,6 @@ var _default = {
         item.user = await UserRepo.findOne({
           _id: new _mongodb.ObjectID(item.user_id)
         });
-        item.imagem = `data:image/png;base64, ${(0, _getImage.default)(item.imagem)}`;
       }
 
       return response.json(item);
@@ -79,15 +77,16 @@ var _default = {
       const itemReciclavel = request.body;
       const ItensReciclaveisRepo = (0, _typeorm.getMongoRepository)(_ItensReciclaveis.default);
       const user_id = request.user.id;
-      const ItensReciclaveisCreate = ItensReciclaveisRepo.create({
+      const data = {
         nome: itemReciclavel.nome,
         descricao: itemReciclavel.descricao,
         itens: itemReciclavel.itens,
         imagem: '',
         user_id: user_id,
         categoria_id: itemReciclavel.categoria_id,
-        preco: parseFloat(itemReciclavel.preco.toString())
-      });
+        preco: parseFloat(itemReciclavel.preco)
+      };
+      const ItensReciclaveisCreate = ItensReciclaveisRepo.create(data);
       await ItensReciclaveisRepo.save(ItensReciclaveisCreate);
       return response.json({
         message: "Cadastrado",
@@ -117,7 +116,7 @@ var _default = {
     await AnexoRepo.save(anexoCreate);
     const id = request.params.id;
     await ItensReciclaveisRepo.update(id, {
-      imagem: anexoCreate.caminho.toString()
+      imagem: (0, _getImage.default)(anexoCreate.caminho)
     });
     return response.status(201).json({
       message: "Imagem cadastrada"

@@ -21,8 +21,8 @@ function getImage(caminho) {
       encoding: 'base64'
     });
 
-    return f ?? null;
+    return `data:image/png;base64, ${f}` ?? '';
   } catch {
-    return null;
+    return '';
   }
 }

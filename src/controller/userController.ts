@@ -5,6 +5,7 @@ import { getMongoRepository } from "typeorm";
 import createUserService from "../services/createUserServicec";
 import getUserServiceWithItens from "../services/getUserServiceWithItens";
 import AppError from "../errors/AppError";
+import getImage from "../config/getImage";
 
 export default {
     async create(request: Request, response: Response) {
@@ -29,9 +30,7 @@ export default {
     async profile(request: Request, response: Response) {
         try {
             const { id } = request.params;
-
             const result = await getUserServiceWithItens.execute(id);
-
             return response.json(result);
         } catch (e) {
             throw new AppError("Error internal");
@@ -54,7 +53,7 @@ export default {
             const anexoCreate = AnexoRepo.create({ tipo: "profile", caminho: caminho })
             await AnexoRepo.save(anexoCreate);
 
-            await UserRepo.update(id, { foto_user: anexoCreate.caminho.toString() })
+            await UserRepo.update(id, { foto_user: getImage(caminho) })
             return response.status(201).json({ message: "Imagem cadastrada" })
         } catch (e) {
             throw new AppError("Error internal");

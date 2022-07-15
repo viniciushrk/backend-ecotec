@@ -17,6 +17,8 @@ var _getUserServiceWithItens = _interopRequireDefault(require("../services/getUs
 
 var _AppError = _interopRequireDefault(require("../errors/AppError"));
 
+var _getImage = _interopRequireDefault(require("../config/getImage"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var _default = {
@@ -80,7 +82,7 @@ var _default = {
       });
       await AnexoRepo.save(anexoCreate);
       await UserRepo.update(id, {
-        foto_user: anexoCreate.caminho.toString()
+        foto_user: (0, _getImage.default)(caminho)
       });
       return response.status(201).json({
         message: "Imagem cadastrada"

@@ -15,9 +15,7 @@ export default {
         try {
             const categoriasRepo = getMongoRepository(Categorias);
             const categorias = await categoriasRepo.find();
-            categorias.map(x => {
-                x.imagem = `data:image/png;base64, ${getImage(x.imagem)}`;
-            });
+
             return response.json(categorias);
         } catch (e) {
             throw new AppError("Error internal");
@@ -34,8 +32,11 @@ export default {
             if (arquivo == undefined) {
                 return response.status(400).json({ message: "Arquivo não encontrado, informe a imagem do item." })
             }
+
             const caminho = `${arquivo.filename}${path.extname(arquivo.originalname)}`
-            categoria.imagem = caminho;
+
+            categoria.imagem = getImage(caminho);
+
             const categoriaCreate = categoriasRepo.create(categoria)
             await categoriasRepo.save(categoriaCreate);
 

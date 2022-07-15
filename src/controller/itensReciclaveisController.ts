@@ -15,7 +15,7 @@ interface ItensReciclaveisRequest {
     descricao: string;
     itens: string[];
     categoria_id: string;
-    preco: number;
+    preco: number | string;
 }
 
 const formatmoney = { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' };
@@ -34,7 +34,6 @@ export default {
 
         itens.map(x => {
             x.preco_format = x.preco.toLocaleString('pt-BR', formatmoney);
-            x.imagem = `data:image/png;base64, ${getImage(x.imagem)}`;
         });
 
         return response.json(itens);
@@ -50,11 +49,8 @@ export default {
             const item = await itensRepo.findOne({ _id: new ObjectID(params.id) });
 
             if (item != undefined) {
-
                 item.preco_format = item.preco.toLocaleString('pt-BR', formatmoney);
-
                 item.user = await UserRepo.findOne({ _id: new ObjectID(item.user_id) });
-                item.imagem = `data:image/png;base64, ${getImage(item.imagem)}`;
             }
 
             return response.json(item);
@@ -65,22 +61,21 @@ export default {
 
     async store(request: Request, response: Response) {
         try {
-            const itemReciclavel: ItensReciclaveisRequest = request.body;
+            const itemReciclavel = request.body;
             const ItensReciclaveisRepo = getMongoRepository(ItensReciclaveis);
 
             const user_id = request.user.id;
+            const data = {
+                nome: itemReciclavel.nome,
+                descricao: itemReciclavel.descricao,
+                itens: itemReciclavel.itens,
+                imagem: '',
+                user_id: user_id,
+                categoria_id: itemReciclavel.categoria_id,
+                preco: parseFloat(itemReciclavel.preco)
+            };
 
-            const ItensReciclaveisCreate = ItensReciclaveisRepo.create(
-                {
-                    nome: itemReciclavel.nome,
-                    descricao: itemReciclavel.descricao,
-                    itens: itemReciclavel.itens,
-                    imagem: '',
-                    user_id: user_id,
-                    categoria_id: itemReciclavel.categoria_id,
-                    preco: parseFloat(itemReciclavel.preco.toString())
-                }
-            );
+            const ItensReciclaveisCreate = ItensReciclaveisRepo.create(data);
 
             await ItensReciclaveisRepo.save(ItensReciclaveisCreate);
 
@@ -105,7 +100,7 @@ export default {
 
         const id = request.params.id;
 
-        await ItensReciclaveisRepo.update(id, { imagem: anexoCreate.caminho.toString() })
+        await ItensReciclaveisRepo.update(id, { imagem: getImage(anexoCreate.caminho) })
         return response.status(201).json({ message: "Imagem cadastrada" })
     },
 
