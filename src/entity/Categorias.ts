@@ -1,19 +1,22 @@
-import {Entity, ObjectID, ObjectIdColumn, Column, CreateDateColumn, UpdateDateColumn} from "typeorm"; 
+import { Entity, ObjectID, ObjectIdColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
-@Entity("Categoria") 
-class Categoria {  
+@Entity("Categoria")
+class Categoria {
 
-   @ObjectIdColumn() 
-   id: ObjectID; 
-   
-   @Column() 
-   name: string; 
+   @ObjectIdColumn()
+   id: ObjectID;
+
+   @Column()
+   name: string;
+
+   @Column()
+   imagem: string;
 
    @CreateDateColumn()
-   created_at: Date; 
+   created_at: Date;
 
    @UpdateDateColumn()
-   update_at: Date; 
+   update_at: Date;
 }
 
 export default Categoria
