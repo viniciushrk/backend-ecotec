@@ -7,8 +7,6 @@ import ensureAuthenticated from '../middleware/ensureAuthenticated';
 
 const categoryRouter = Router();
 
-categoryRouter.use(ensureAuthenticated);
-
 categoryRouter.get('/', categoryController.get);
 
 categoryRouter.post('/', upload.single("imagem"), categoryController.store);
