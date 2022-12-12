@@ -36,6 +36,7 @@ const path = __importStar(require("path"));
 const Anexos_1 = __importDefault(require("../entity/Anexos"));
 const ensureAuthenticated_1 = __importDefault(require("../middleware/ensureAuthenticated"));
 const Users_1 = __importDefault(require("../entity/Users"));
+
 var storage = multer_1.default.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads/');
@@ -46,20 +47,21 @@ var storage = multer_1.default.diskStorage({
         cb(null, `${file.fieldname}-${uniqueSuffix}${path.extname(file.originalname)}`);
     }
 });
+
 const itensReciclaveisRouter = (0, express_1.Router)();
 const upload = (0, multer_1.default)({ storage });
 const formatmoney = { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' };
+
 itensReciclaveisRouter.get('/', async (request, response) => {
     const itensRepo = (0, typeorm_1.getMongoRepository)(ItensReciclaveis_1.default);
     const UserRepo = (0, typeorm_1.getMongoRepository)(Users_1.default);
     const itens = await itensRepo.find();
-    itens.map(async (x) => {
-        x.user = await UserRepo.findOne({ _id: new mongodb_1.ObjectID(x.user_id) });
-    });
-    itens.map(x => {
-        x.preco_format = x.preco.toLocaleString('pt-BR', formatmoney);
-        x.imagem = `data:image/png;base64, ${getImage(x.imagem)}`;
-    });
+    console.log("SDADsa");
+    // itens.map(async x => {
+    //     x.user = await UserRepo.findOne({ _id: new mongodb_1.ObjectID(x.user_id) });
+    //     x.preco_format = x.preco.toLocaleString('pt-BR', formatmoney);
+    //     // x.imagem = `data:image/png;base64, ${getImage(x.imagem)}`;
+    // });
     return response.json(itens);
 });
 itensReciclaveisRouter.get('/:id', async (request, response) => {

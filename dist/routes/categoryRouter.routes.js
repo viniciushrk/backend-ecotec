@@ -11,12 +11,9 @@ var _storage = _interopRequireDefault(require("../config/storage"));
 
 var _categoryController = _interopRequireDefault(require("../controller/categoryController"));
 
-var _ensureAuthenticated = _interopRequireDefault(require("../middleware/ensureAuthenticated"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const categoryRouter = (0, _express.Router)();
-categoryRouter.use(_ensureAuthenticated.default);
 categoryRouter.get('/', _categoryController.default.get);
 categoryRouter.post('/', _storage.default.single("imagem"), _categoryController.default.store);
 categoryRouter.put('/update', _categoryController.default.update);
