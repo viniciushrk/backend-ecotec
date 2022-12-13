@@ -36,15 +36,31 @@ const formatmoney = {
 };
 var _default = {
   async all(request, response) {
+    const {
+      filter
+    } = request.query;
+
+    if (filter != undefined) {
+      const itensRepo = (0, _typeorm.getMongoRepository)(_ItensReciclaveis.default);
+      const itens = await itensRepo.find({
+        where: {
+          nome: {
+            $eq: filter
+          } // { user: Like(`${filter}`) }
+
+        }
+      });
+      itens.map(item => {
+        if (item != undefined) {
+          item.preco_format = item.preco.toLocaleString('pt-BR', formatmoney);
+        }
+      });
+      return response.json(itens);
+    }
+
     const itensRepo = (0, _typeorm.getMongoRepository)(_ItensReciclaveis.default);
-    const UserRepo = (0, _typeorm.getMongoRepository)(_Users.default);
     const itens = await itensRepo.find();
     itens.map(async x => {
-      x.user = await UserRepo.findOne({
-        _id: new _mongodb.ObjectID(x.user_id)
-      });
-    });
-    itens.map(x => {
       x.preco_format = x.preco.toLocaleString('pt-BR', formatmoney);
     });
     return response.json(itens);
@@ -60,6 +76,7 @@ var _default = {
       });
 
       if (item != undefined) {
+        item.imagem = '';
         item.preco_format = item.preco.toLocaleString('pt-BR', formatmoney);
         item.user = await UserRepo.findOne({
           _id: new _mongodb.ObjectID(item.user_id)
@@ -72,17 +89,45 @@ var _default = {
     }
   },
 
+  async getByDescriptionOrUser(filter) {
+    try {
+      const itensRepo = (0, _typeorm.getMongoRepository)(_ItensReciclaveis.default);
+      const itens = await itensRepo.find({
+        where: [{
+          nome: (0, _typeorm.Like)(`${filter}`)
+        }, {
+          user: (0, _typeorm.Like)(`${filter}`)
+        }]
+      });
+      itens.map(item => {
+        if (item != undefined) {
+          item.preco_format = item.preco.toLocaleString('pt-BR', formatmoney);
+        }
+      });
+      return itens;
+    } catch (e) {
+      console.error(e);
+      throw new _AppError.default("Error internal");
+    }
+  },
+
   async store(request, response) {
     try {
       const itemReciclavel = request.body;
       const ItensReciclaveisRepo = (0, _typeorm.getMongoRepository)(_ItensReciclaveis.default);
+      const UserRepo = (0, _typeorm.getMongoRepository)(_Users.default);
       const user_id = request.user.id;
+      const user = await UserRepo.findOne({
+        _id: new _mongodb.ObjectID(user_id)
+      });
+      console.log("user: ", user);
       const data = {
         nome: itemReciclavel.nome,
         descricao: itemReciclavel.descricao,
         itens: itemReciclavel.itens,
         imagem: '',
         user_id: user_id,
+        user: `${user?.nome} - ${user?.telefone}`,
         categoria_id: itemReciclavel.categoria_id,
         preco: parseFloat(itemReciclavel.preco)
       };

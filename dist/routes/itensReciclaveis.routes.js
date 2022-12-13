@@ -17,7 +17,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const itensReciclaveisRouter = (0, _express.Router)();
 itensReciclaveisRouter.get('/', _itensReciclaveisController.default.all);
-itensReciclaveisRouter.get('/:id', _itensReciclaveisController.default.get);
+itensReciclaveisRouter.get('/:id', _itensReciclaveisController.default.get); // itensReciclaveisRouter.get('/filter', itensReciclaveisController.getByDescriptionOrUser)
+
 itensReciclaveisRouter.patch('/:path', _itensReciclaveisController.default.patchImage);
 itensReciclaveisRouter.use(_ensureAuthenticated.default);
 itensReciclaveisRouter.post('/:id', _storage.default.single("imagem"), _itensReciclaveisController.default.uploadImage);
