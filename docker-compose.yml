@@ -21,7 +21,7 @@ services:
     volumes:
         - "./:/usr/src/app"
     ports:
-      - 8080:8080
+      - 25000:8080
     # links:
     #   - "cache"
     # depends_on:
