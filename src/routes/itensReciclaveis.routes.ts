@@ -9,6 +9,8 @@ itensReciclaveisRouter.get('/', itensReciclaveisController.all)
 
 itensReciclaveisRouter.get('/:id', itensReciclaveisController.get)
 
+// itensReciclaveisRouter.get('/filter', itensReciclaveisController.getByDescriptionOrUser)
+
 itensReciclaveisRouter.patch('/:path', itensReciclaveisController.patchImage)
 
 itensReciclaveisRouter.use(ensureAuthenticated);

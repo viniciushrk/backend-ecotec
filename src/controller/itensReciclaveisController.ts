@@ -1,5 +1,12 @@
 import { Request, Response } from "express";
-import { getMongoRepository } from "typeorm";
+
+
+
+
+
+
+
+import { getMongoRepository, Like } from "typeorm";
 import AppError from "../errors/AppError";
 
 import getImage from '../config/getImage';
@@ -23,16 +30,32 @@ const formatmoney = { minimumFractionDigits: 2, style: 'currency', currency: 'BR
 export default {
 
     async all(request: Request, response: Response) {
+        const { filter } = request.query;
+
+        if (filter != undefined) {
+            const itensRepo = getMongoRepository(ItensReciclaveis);
+
+            const itens = await itensRepo.find({
+                where: {
+                    nome: { $eq: filter }
+                    // { user: Like(`${filter}`) }
+                }
+            });
+
+            itens.map((item) => {
+                if (item != undefined) {
+                    item.preco_format = item.preco.toLocaleString('pt-BR', formatmoney);
+                }
+            });
+
+            return response.json(itens);
+        }
+
         const itensRepo = getMongoRepository(ItensReciclaveis);
-        const UserRepo = getMongoRepository(User);
 
         const itens = await itensRepo.find();
 
-        itens.map(async (x) => {
-            x.user = await UserRepo.findOne({ _id: new ObjectID(x.user_id) });
-        })
-
-        itens.map(x => {
+        itens.map(async x => {
             x.preco_format = x.preco.toLocaleString('pt-BR', formatmoney);
         });
 
@@ -49,6 +72,7 @@ export default {
             const item = await itensRepo.findOne({ _id: new ObjectID(params.id) });
 
             if (item != undefined) {
+                item.imagem = '';
                 item.preco_format = item.preco.toLocaleString('pt-BR', formatmoney);
                 item.user = await UserRepo.findOne({ _id: new ObjectID(item.user_id) });
             }
@@ -59,18 +83,47 @@ export default {
         }
     },
 
+    async getByDescriptionOrUser(filter: string) {
+        try {
+            const itensRepo = getMongoRepository(ItensReciclaveis);
+
+            const itens = await itensRepo.find({
+                where: [
+                    { nome: Like(`${filter}`) },
+                    { user: Like(`${filter}`) }
+                ]
+            });
+
+            itens.map((item) => {
+                if (item != undefined) {
+                    item.preco_format = item.preco.toLocaleString('pt-BR', formatmoney);
+                }
+            });
+
+            return itens;
+        } catch (e) {
+            console.error(e);
+            throw new AppError("Error internal");
+        }
+    },
+
     async store(request: Request, response: Response) {
         try {
             const itemReciclavel = request.body;
             const ItensReciclaveisRepo = getMongoRepository(ItensReciclaveis);
+            const UserRepo = getMongoRepository(User);
 
             const user_id = request.user.id;
+
+            const user = await UserRepo.findOne({ _id: new ObjectID(user_id) });
+            console.log("user: ", user)
             const data = {
                 nome: itemReciclavel.nome,
                 descricao: itemReciclavel.descricao,
                 itens: itemReciclavel.itens,
                 imagem: '',
                 user_id: user_id,
+                user: `${user?.nome} - ${user?.telefone}`,
                 categoria_id: itemReciclavel.categoria_id,
                 preco: parseFloat(itemReciclavel.preco)
             };
